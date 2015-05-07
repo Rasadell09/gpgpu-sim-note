@@ -1,0 +1,61 @@
+1. Environment is Ubuntu 15.04 and vm7.1.1(For Mac)
+
+2. Need to run 64bits CUDA TOOLKIT 4.0 on vm:
+(download CUDA TOOLKIT 4.0 and NVIDIA COMPUTING SDK 4.0 from NIVDIA official website (google: CUDA TOOLKIT 4.0 download))
+cd ~/Downloads
+chmod +x *
+sudo ./<these two files' name>
+
+3. Need to install some basic tools:
+apt-get install xutils-dev (For makedepend)
+apt-get install zlib1g-dev
+apt-get install bison
+apt-get install flex
+
+4. In Ubuntu 15.04, the gcc version is 4.9.2 which is not supported by the Nvidia Computing SDK, so we need to install gcc 4.4, and g++ must be the same version with gcc (also g++ 4.4):
+apt-get install gcc-4.4
+apt-get install g++-4.4
+sudo rm /usr/bin/gcc
+sudo rm /usr/bin/g++
+sudo ln -s /usr/bin/gcc-4.4 /usr/bin/gcc
+sudo ln -s /usr/bin/g++-4.4 /usr/bin/g++
+
+5. We need to install some lib files:
+apt-get install libGL-dev (For gpgpu-sim compile)
+apt-get install libGLU-dev (For Nvidia Computing SDK compile)
+apt-get install libXi-dev (For Nvidia Computing SDK compile)
+apt-get install libXmu-dev (For Nvidia Computing SDK compile)
+(libglut is for OpenGL, but cannot be found by name "libglut")
+apt-cache search glut
+(we find freeglut3-dev)
+apt-get install freeglut3-dev (For Nvidia Computing SDK compile)
+apt-get install libcuda1-304 (For Nvidia Computing SDK compile)
+apt-get install nvidia-opencl-dev (For Nvidia Computing SDK compile)
+
+6. Add following contents in .bashrc:
+export CUDA_INSTALL_PATH=/usr/local/cuda
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/lib:$LD_LIBRARY_PATH
+export PATH=$CUDA_INSTALL_PATH/bin:$PATH
+export NVIDIA_COMPUTE_SDK_LOCATION=~/NVIDIA_GPU_Computing_SDK
+(save and close editor)
+source ~/.bashrc
+
+7. Compile GPGPU-SIM:
+(cd into the gpgpu-sim directory)
+source setup_environment
+make
+
+8. Compile Nvidia Computing SDK:
+(cd into the Nvidia Computing SDK directory)
+sudo make
+
+9. Compile benchmarks:
+apt-get install gfortran
+make -f Makefile.ispass-2009
+(AES,DG,DG/3rdParty still cannot compile, need to be comment)
+
+10.Run benchmarks:
+(copy the contents in GTX480/QuadroFX5600/QuadroFX5800 to benchmark directory)
+./setup_config.sh GTX480 (Or other)
+(cd into the benchmark directory)
+sh README.GPGPU-Sim
